@@ -1,0 +1,36 @@
+name: ci-after-merge-to-main
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  detect-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect changed chart
+        id: detect-chart
+        run: |
+          # Your detection logic here
+          echo "chart_dir=charts/aimlinfra-kuberay-operator" >> $GITHUB_OUTPUT
+
+      - name: Lint Helm chart
+        uses: sadhal-org/actions/.github/actions/helm-lint@main
+        with:
+          chart-dir: ${{ steps.detect-chart.outputs.chart_dir }}
+
+      - name: Package Helm chart
+        id: package
+        uses: sadhal-org/actions/.github/actions/helm-package@main
+        with:
+          chart-dir: ${{ steps.detect-chart.outputs.chart_dir }}
+
+      - name: Publish Helm chart
+        uses: sadhal-org/actions/.github/actions/helm-publish@main
+        with:
+          package-name: ${{ steps.package.outputs.package-name }}
