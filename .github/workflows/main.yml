@@ -30,7 +30,8 @@ jobs:
         with:
           chart-dir: ${{ steps.detect-chart.outputs.chart_dir }}
 
-      # - name: Publish Helm chart
-      #   uses: sadhal-org/actions/.github/actions/helm-push@main
-      #   with:
-      #     package-name: ${{ steps.package.outputs.package-name }}
+      - name: Publish Helm chart
+        uses: sadhal-org/actions/.github/actions/helm-push@main
+        with:
+          package-name: ${{ steps.package.outputs.package-name }}
+          auth: ${{ secrets.GITHUB_TOKEN }}
